@@ -7,6 +7,11 @@
   <meta name="description" content="Sulagna Ghosh — PhD candidate in Statistics at the University of Chicago working on Bayesian machine learning, point processes, and customer analytics.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- KaTeX renders the $...$ math in the abstracts -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$', right: '$', display: false}]});"></script>
   <style>
     :root {
       --bg: #fdfcfa;
@@ -60,6 +65,19 @@
     .project .with { font-family: Inter, system-ui, sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
     .badge { display: inline-block; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-weight: 500;
              background: var(--card); color: var(--accent); padding: 2px 8px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+
+    .project .status { font-family: Inter, system-ui, sans-serif; font-size: 13px; margin-bottom: 8px; }
+    .project .status a { margin-left: 10px; }
+    details { margin: 4px 0 0; }
+    summary { font-family: Inter, system-ui, sans-serif; font-size: 13px; font-weight: 500; color: var(--accent);
+              cursor: pointer; list-style: none; display: inline-block; }
+    summary::-webkit-details-marker { display: none; }
+    summary::before { content: "+ "; }
+    details[open] summary::before { content: "\2212 "; }
+    details .abstract { font-size: 15.5px; color: var(--text); background: var(--card); border-left: 3px solid var(--rule);
+                        padding: 12px 16px; margin-top: 8px; border-radius: 0 4px 4px 0; }
+    details .abstract p:last-child { margin-bottom: 0; }
+    .katex { font-size: 1em; }
 
     ol.pubs { padding-left: 0; list-style: none; margin: 0; }
     ol.pubs li { margin-bottom: 18px; padding-left: 0; }
@@ -116,7 +134,7 @@
       My research involves development of scalable Bayesian methods for large, structured datasets, such as, temporal point processes
       for event data from different news sources and customer transactions data. Inference on such models involves use of amortized
       variational inference and modern machine learning tools. I have also worked with Professor
-      <a href="https://nignatiadis.github.io">Nikolaos Ignatiadis</a> on empirical Bayes methods for denoising.
+      <a href="https://nignatiadis.github.io">Nikos Ignatiadis</a> on empirical Bayes methods for denoising.
       I care about models that are both interpretable and fast enough to fit to large-scale real data, and my applications range
       from international relations event streams to customer purchase histories. 
     </p>
@@ -130,48 +148,170 @@
     <h2>Research</h2>
 
     <div class="project">
-      <h3>Bayesian modeling of spatiotemporal event data with low-rank Neyman–Scott tensor processes
+      <h3>Flexible and scalable Bayesian modeling of spatiotemporal event data with low-rank Neyman–Scott tensor processes
         <span class="badge">Best Poster, ISBA 2026</span></h3>
       <div class="with">with Aaron Schein</div>
+      <div class="status">In preparation</div>
       <p>
-        Consider records of the form "news source <em>s</em> reports that actor <em>i</em> took action <em>a</em>
-        toward actor <em>j</em> at time <em>t</em>." I develop a gradient-based, scalable temporal point process model
-        for such large-scale event data that infers latent events interpretable as "major stories," which generate
-        related events over long periods. The model combines neural point processes, probabilistic non-negative
-        tensor decomposition, and scalable approximate Bayesian inference. Although motivated by international
-        relations data, it applies broadly to marked temporal event data.
+        A family of Neyman–Scott tensor process models for large-scale marked spatiotemporal event data, such as news
+        reports of who did what to whom, when and where, fit with gradient-based amortized variational inference. On
+        international relations news data, the inferred latent events are interpretable as “major stories” that
+        generate related events over long periods.
       </p>
+      <details>
+        <summary>Abstract</summary>
+        <div class="abstract"><p>
+          Consider data of the form “news source $s$ reports that actor $i$ took action $a$ toward actor $j$ at time $t$
+          in location $\ell$” where the news source $s \in [S]$ and actors $i,j \in [N]$ are categorical, while time $t$
+          and location $\ell$ are continuous. Such data can be modeled as a marked spatiotemporal point process, where
+          each event $\mathbf{e}_n \equiv (t_n, \ell_n, \mathbf{m}_n)$ occurs at a time $t_n$ and location $\ell_n$ and
+          as a discrete mark which is multivariate $\mathbf{m}_n \equiv (s_n, i_n, j_n, a_n)$. Such data can also be
+          viewed as forming a four-mode “event tensor” $\mathbf{Y}$, where the entry
+          $Y_{s,i,j,a} = \{\mathbf{e}_n: \mathbf{m}_n=(s,i,j,a)\}$ is a spatiotemporal point process specific to a
+          particular value of the mark. This paper considers a family of models we call Neyman-Scott tensor processes
+          (NSTPs) which assume that each $Y_{s,i,j,a} \sim \textrm{NSP}(\lambda_{s,i,j,a})$ comes from a Neyman-Scott
+          process with rate function $\lambda_{s,i,j,a}(t, \ell)$ over time and space, and that the tensor of rate
+          functions $\mathbf{\Lambda}$ has low-rank structure. To fit such models to large-scale event data, we develop
+          a gradient-based amortized variational inference algorithm that uses another NSTP as the variational family
+          and a recognition network based on self-attention. We show that on real news data of international
+          relations, the inferred latent events that comprise each NSP's rate function are interpretable as “major
+          stories” which generate related events over long periods. While tailored to international relations data,
+          our work is broadly applicable to marked spatiotemporal event data, and generally builds upon recent advances
+          in neural point processes, probabilistic non-negative tensor decomposition, and scalable approximate Bayesian
+          inference.
+        </p></div>
+      </details>
     </div>
 
     <div class="project">
-      <h3>Amortized variational inference for customer-base analysis</h3>
+      <h3>Scalable amortized variational inference for non-Poisson buy-'til-you-die models</h3>
       <div class="with">with Aaron Schein</div>
+      <div class="status">Under review, <em>International Journal of Research in Marketing</em>
+        <a href="https://arxiv.org/abs/2608.19022">arXiv</a></div>
       <p>
-        "Buy-'til-you-die" models are the workhorse of customer lifetime value estimation, but they typically assume
-        Poisson purchase timing and rely on inference that does not scale to modern customer bases. This work
-        develops scalable amortized variational inference for non-Poisson buy-'til-you-die models, making richer
-        timing assumptions practical at scale.
+        Buy-'til-you-die models in which transactions follow a Weibull renewal process rather than a Poisson process,
+        fit with amortized variational inference. The model fits 5 million online retail customers in 8 minutes,
+        against an estimated 3–4 days for the current state of the art, with no appreciable change in interpretation
+        or predictive performance.
       </p>
+      <details>
+        <summary>Abstract</summary>
+        <div class="abstract"><p>
+          Despite the wide variety of existing Buy-'Til-You-Die (BTYD) models, nearly all rely upon the convenient
+          assumption of transactions following a Poisson process. As modern customer bases grow larger and more
+          diverse, a major gap in the marketing literature is BTYD models that can account for heterogeneity in timing
+          patterns across millions of customers. This paper addresses that gap, introducing a family of models that
+          assume transactions follow a Weibull renewal process and developing a highly scalable scheme for parameter
+          estimation based on an amortized variational inference procedure. The proposed model fits to a proprietary
+          dataset of 5 million online retail customers in 8 minutes which would take the current state-of-the-art an
+          estimated 3-4 days. We show both theoretically and empirically that this dramatic improvement in
+          computational performance comes with no appreciable change to either model interpretation or predictive
+          performance. Beyond scalability, gradient-based variational inference also makes it easy to extend the model
+          to covariates, which we illustrate on a public dataset of 4 million political donors during the 2020 US
+          General election cycle. More generally, this paper demonstrates how to blend recent advances in approximate
+          Bayesian inference and the tools of modern machine learning to dramatically improve the efficiency and
+          expressivity of probabilistic models for customer base analysis.
+        </p></div>
+      </details>
     </div>
 
     <div class="project">
-      <h3>Stein's unbiased risk estimate and score matching</h3>
-      <div class="with">with Nikolaos Ignatiadis, Frederic Koehler, and Amber Lee</div>
+      <h3>Stein's unbiased risk estimate and Hyvärinen's score matching</h3>
+      <div class="with">with Nikos Ignatiadis, Frederic Koehler, and Amber Lee</div>
+      <div class="status">Under revision, <em>Journal of the Royal Statistical Society: Series B</em>
+        <a href="https://arxiv.org/abs/2502.20123">arXiv</a></div>
       <p>
-        We connect Stein's unbiased risk estimate (SURE) with Hyvärinen's score matching, two classical ideas that turn
-        out to be closely related, and use the connection to develop and analyze empirical Bayes estimators for
-        denoising problems.
+        SURE minimization, equivalent to Hyvärinen's implicit score matching, achieves nearly parametric regret rates
+        in classical empirical Bayes and fast rates to the oracle denoiser in a misspecified model. It extends to
+        heteroscedastic noise and side information, and outperforms the NPMLE under misspecification, including in an
+        application to economic mobility in the Opportunity Atlas.
       </p>
+      <details>
+        <summary>Abstract</summary>
+        <div class="abstract"><p>
+          Given a collection of observed signals corrupted with Gaussian noise, how can we learn to optimally denoise
+          them? This fundamental problem arises in both empirical Bayes and generative modeling. In empirical Bayes,
+          the predominant approach is via nonparametric maximum likelihood estimation (NPMLE), while in generative
+          modeling, score matching (SM) methods have proven very successful. In our setting, Hyvärinen's implicit SM is
+          equivalent to another classical idea from statistics—Stein's Unbiased Risk Estimate (SURE). Revisiting SURE
+          minimization, we establish, for the first time, that SURE achieves nearly parametric rates of convergence of
+          the regret in the classical empirical Bayes setting with homoscedastic noise. We also prove that SURE-training
+          can achieve fast rates of convergence to the oracle denoiser in a commonly studied misspecified model. We show
+          how to practically implement our method in settings involving heteroscedasticity and side-information, such
+          as in an application to the estimation of economic mobility in the Opportunity Atlas. Our empirical results
+          demonstrate the superior performance of SURE-training over NPMLE under misspecification. Collectively, our
+          findings advance SURE/SM as a strong alternative to the NPMLE for empirical Bayes problems in both theory and
+          practice.
+        </p></div>
+      </details>
     </div>
 
     <div class="project">
-      <h3>Retrospective inference from recalled time-to-event data</h3>
+      <h3>Choice models with stochastic variables and random coefficients</h3>
+      <div class="with">with M. Biswas, C. R. Bhat, and A. R. Pinjari</div>
+      <div class="status"><em>Journal of Choice Modelling</em>, 2024
+        <a href="https://doi.org/10.1016/j.jocm.2024.100488">DOI</a></div>
+      <p>
+        An integrated choice and stochastic variable framework with random coefficients (ICSV-RC) that jointly
+        accommodates uncertainty in alternative attributes such as travel time and heterogeneity in travellers'
+        responses to them. Ignoring either source of variability biases all parameter estimates, as shown in
+        simulations and a truck route-choice application.
+      </p>
+      <details>
+        <summary>Abstract</summary>
+        <div class="abstract"><p>
+          In travel choice models, variables describing alternative attributes such as travel time may have to be
+          specified as stochastic because the analyst may not have accurate measurements of the attribute values
+          considered by the decision-maker. Such stochasticity in alternative attributes is different from unobserved
+          heterogeneity in the coefficients representing travellers' response to those attributes. Specifying only one
+          of these as random while keeping the other fixed can potentially result in biased parameter estimates,
+          inferior goodness-of-fit, and distorted information for policy analysis. Therefore, in this study, we propose
+          an integrated choice and stochastic variable modelling framework with random coefficients (i.e., an ICSV-RC
+          framework) that allows the analyst to accommodate stochasticity in alternative attributes and random
+          coefficients on such attributes. In addition, we show that ignoring either source of stochasticity –
+          stochasticity in alternative attributes or unobserved heterogeneity in response to the attributes – results
+          in models with inferior goodness-of-fit and a systematic bias in all parameter estimates. We demonstrate this
+          using simulation experiments for two different travel choice settings, one involving labelled mode choice
+          alternatives and the other involving unlabelled route choice alternatives. In addition, we present an
+          empirical analysis in the context of truck route choice to highlight the importance of accommodating both
+          sources of variability – stochasticity in travel times and random heterogeneity in response to travel times.
+        </p></div>
+      </details>
+    </div>
+
+    <div class="project">
+      <h3>A study of inaccuracy on retrospective inference from recalled time-to-event data</h3>
       <div class="with">with Debasis Sengupta</div>
+      <div class="status">Master's thesis, Indian Statistical Institute</div>
       <p>
-        When people are asked to recall when an event happened, their answers are both imprecise and sometimes wrong.
-        We propose a model that accounts for both inaccuracy and imprecision in recall while addressing confounding
-        between correctly and incorrectly recalled observations, and apply it to survey data on the age at menarche.
+        A model for retrospective time-to-event data that accounts for inaccurate and imprecise recall, built around
+        Cox's relative risk regression, with a computationally simple estimator of the baseline distribution. On
+        recalled age at menarche, allowing for recall error gives greater middle quantiles of the estimated baseline
+        distribution.
       </p>
+      <details>
+        <summary>Abstract</summary>
+        <div class="abstract">
+          <p>
+            This paper deals with the issue of inaccurate and imprecise recall in the analysis of retrospective and
+            cross-sectional data on time-to-event. Of particular interest is a study of young and adolescent females,
+            in which some subjects were unable to recall the date of onset of their menarche. Although there is no
+            direct evidence of inaccuracy in these data, a general suspicion of inaccuracy in any recall based data can
+            be found in the existing literature.
+          </p>
+          <p>
+            The issue of incorrect recall is rarely addressed in cross-sectional studies. The main challenge is
+            confounding between correctly and incorrectly recalled data. In this study, we address it through a
+            carefully crafted model of the observed time-to-event, built around Cox's relative risk regression model of
+            covariate effect. For this model, we present a computationally simple estimator of the baseline
+            time-to-event distribution, which is asymptotically equivalent to the maximum partial likelihood estimator.
+            We compare the simulated performance of the proposed estimator with that of a similar estimator that
+            assumes all the recalled data to be accurate. Analysis of the motivating data set indicates that the
+            estimated baseline time-to-event distribution has greater middle quantiles when the possibility of recall
+            error is factored in.
+          </p>
+        </div>
+      </details>
     </div>
   </section>
 
@@ -201,15 +341,14 @@
 
   <section id="teaching">
     <h2>Teaching</h2>
-    <p>
-      Since January 2023 I have been a teaching assistant in the Department of Statistics at the University of Chicago,
-      for both undergraduate and graduate courses: leading weekly problem sessions, holding office hours, and grading.
-    </p>
-    <!-- Optional: list specific courses here, e.g.
+    <p>Teaching assistant, Department of Statistics, The University of Chicago, 2023–present.</p>
     <ul class="plain">
-      <li>STAT xxx: Course name (TA, Autumn 2025)</li>
+      <li>STAT 34300: Applied Linear Statistical Methods (graduate), with Nikos Ignatiadis. Autumn 2024–2026.</li>
+      <li>STAT 22200: Linear Models and Experimental Design (undergraduate), with Fei Liu. Spring 2025–2026.</li>
+      <li>STAT 34700: Generalized Linear Models (graduate), with Jingshu Wang. Winter 2024.</li>
+      <li>STAT 22000: Statistical Methods and Applications (undergraduate), with Fei Liu and Kendra Burbank. Spring and Autumn 2023.</li>
+      <li>STAT 22600: Analysis of Categorical Data (undergraduate), with Yibi Huang. Winter 2023.</li>
     </ul>
-    -->
   </section>
 
   <section id="background">
